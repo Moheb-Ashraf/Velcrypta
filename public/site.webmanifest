@@ -1,0 +1,15 @@
+{
+  "name": "Velcrypta — Uncover the Hidden. Fear the Unknown.",
+  "short_name": "Velcrypta",
+  "description": "Dark mystery storytelling platform. Horror, unsolved mysteries, true crime, and hidden truths.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0B0B",
+  "theme_color": "#C2A96A",
+  "icons": [
+    { "src": "/velcrypta-logo.jpg", "sizes": "192x192", "type": "image/jpeg" },
+    { "src": "/velcrypta-logo.jpg", "sizes": "512x512", "type": "image/jpeg" }
+  ],
+  "categories": ["news", "entertainment", "books"],
+  "lang": "en"
+}
