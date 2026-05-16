@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.velcrypta.com/sitemap.xml
+Sitemap: https://velcrypta.vercel.app/sitemap.xml
 
 User-agent: Googlebot
 Allow: /

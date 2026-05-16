@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const BASE_URL = 'https://www.velcrypta.com';
+const BASE_URL = 'https://velcrypta.vercel.app';
 const DEFAULT_IMAGE = `${BASE_URL}/velcrypta-logo.jpg`;
 
 function setMeta(name, content, attr = 'name') {

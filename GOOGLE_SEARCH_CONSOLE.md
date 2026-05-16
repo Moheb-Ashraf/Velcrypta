@@ -3,8 +3,8 @@
 ## Step 1: Add Property
 1. Go to https://search.google.com/search-console/
 2. Click "Add property"
-3. Choose "URL prefix" → enter: https://www.velcrypta.com
-4. OR choose "Domain" → enter: velcrypta.com (covers all subdomains)
+3. Choose "URL prefix" → enter: https://velcrypta.vercel.app/
+4. OR, if you use the custom domain, choose "Domain" → enter: velcrypta.com (covers all subdomains)
 
 ## Step 2: Verify Ownership
 Choose ONE of these methods:
@@ -31,7 +31,7 @@ Choose ONE of these methods:
 
 ## Step 3: Submit Sitemap
 1. In Search Console → Sitemaps
-2. Add: https://www.velcrypta.com/sitemap.xml
+2. Add: https://velcrypta.vercel.app/sitemap.xml
 3. Click "Submit"
 4. Wait 24–48 hours for Google to crawl
 
