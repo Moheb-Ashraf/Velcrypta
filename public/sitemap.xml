@@ -2,83 +2,202 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
+  <!-- ══ MAIN PAGES ══ -->
   <url>
     <loc>https://velcrypta.vercel.app/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <lastmod>2026-05-16</lastmod>
+    <lastmod>2026-05-30</lastmod>
   </url>
-
   <url>
     <loc>https://velcrypta.vercel.app/stories</loc>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-    <lastmod>2026-05-16</lastmod>
+    <priority>0.95</priority>
+    <lastmod>2026-05-30</lastmod>
   </url>
-
   <url>
     <loc>https://velcrypta.vercel.app/categories</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <lastmod>2026-05-16</lastmod>
+    <priority>0.85</priority>
+    <lastmod>2026-05-30</lastmod>
   </url>
 
+  <!-- ══ CATEGORY PAGES ══ -->
   <url>
     <loc>https://velcrypta.vercel.app/categories/mysteries</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <lastmod>2026-05-30</lastmod>
   </url>
   <url>
     <loc>https://velcrypta.vercel.app/categories/true-crime</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <lastmod>2026-05-30</lastmod>
   </url>
   <url>
     <loc>https://velcrypta.vercel.app/categories/dark-theories</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <lastmod>2026-05-30</lastmod>
   </url>
   <url>
     <loc>https://velcrypta.vercel.app/categories/supernatural</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <lastmod>2026-05-30</lastmod>
   </url>
 
+  <!-- ══ MYSTERIES ══ -->
   <url>
-    <loc>https://velcrypta.vercel.app/story/the-vanishing-of-flight-19</loc>
+    <loc>https://velcrypta.vercel.app/story/dyatlov-pass-incident</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+    <lastmod>2026-05-30</lastmod>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=900&amp;q=80</image:loc>
+      <image:title>The Dyatlov Pass Incident</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://velcrypta.vercel.app/story/vanishing-of-flight-19</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.92</priority>
+    <lastmod>2026-05-30</lastmod>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1534447677768-be436bb09401?w=900&amp;q=80</image:loc>
+      <image:title>The Vanishing of Flight 19</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://velcrypta.vercel.app/story/db-cooper-hijacking</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <lastmod>2026-05-16</lastmod>
+    <lastmod>2026-05-30</lastmod>
   </url>
   <url>
-    <loc>https://velcrypta.vercel.app/story/the-dyatlov-pass-incident</loc>
+    <loc>https://velcrypta.vercel.app/story/tamam-shud-somerton-man</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+    <lastmod>2026-05-30</lastmod>
+  </url>
+  <url>
+    <loc>https://velcrypta.vercel.app/story/numbers-stations-mystery</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <lastmod>2026-05-30</lastmod>
+  </url>
+  <url>
+    <loc>https://velcrypta.vercel.app/story/the-taos-hum</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.83</priority>
+    <lastmod>2026-05-30</lastmod>
+  </url>
+
+  <!-- ══ TRUE CRIME ══ -->
+  <url>
+    <loc>https://velcrypta.vercel.app/story/hinterkaifeck-murders</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+    <lastmod>2026-05-30</lastmod>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=900&amp;q=80</image:loc>
+      <image:title>The Hinterkaifeck Murders</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://velcrypta.vercel.app/story/sodder-children</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.92</priority>
+    <lastmod>2026-05-30</lastmod>
+  </url>
+  <url>
+    <loc>https://velcrypta.vercel.app/story/zodiac-killer</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+    <lastmod>2026-05-30</lastmod>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1518709766631-a6a7f45921c3?w=900&amp;q=80</image:loc>
+      <image:title>The Zodiac Killer</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://velcrypta.vercel.app/story/black-dahlia-murder</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.93</priority>
+    <lastmod>2026-05-30</lastmod>
+  </url>
+  <url>
+    <loc>https://velcrypta.vercel.app/story/jack-the-ripper</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+    <lastmod>2026-05-30</lastmod>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=900&amp;q=80</image:loc>
+      <image:title>Jack the Ripper</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://velcrypta.vercel.app/story/unit-731-japan</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+    <lastmod>2026-05-30</lastmod>
+  </url>
+
+  <!-- ══ DARK THEORIES ══ -->
+  <url>
+    <loc>https://velcrypta.vercel.app/story/simulation-theorem</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <lastmod>2026-05-16</lastmod>
+    <lastmod>2026-05-30</lastmod>
   </url>
   <url>
-    <loc>https://velcrypta.vercel.app/story/the-sodder-children</loc>
+    <loc>https://velcrypta.vercel.app/story/fermi-paradox-dark-forest</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <lastmod>2026-05-16</lastmod>
+    <priority>0.9</priority>
+    <lastmod>2026-05-30</lastmod>
   </url>
   <url>
-    <loc>https://velcrypta.vercel.app/story/the-hinterkaifeck-murders</loc>
+    <loc>https://velcrypta.vercel.app/story/mk-ultra-mind-control</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <lastmod>2026-05-16</lastmod>
+    <priority>0.93</priority>
+    <lastmod>2026-05-30</lastmod>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1582719188393-bb71ca45dbb9?w=900&amp;q=80</image:loc>
+      <image:title>MK-Ultra CIA Mind Control</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://velcrypta.vercel.app/story/mandela-effect-reality</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.87</priority>
+    <lastmod>2026-05-30</lastmod>
+  </url>
+
+  <!-- ══ SUPERNATURAL ══ -->
+  <url>
+    <loc>https://velcrypta.vercel.app/story/mothman-prophecy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-05-30</lastmod>
   </url>
   <url>
     <loc>https://velcrypta.vercel.app/story/voices-from-the-static</loc>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
-    <lastmod>2026-05-16</lastmod>
+    <lastmod>2026-05-30</lastmod>
   </url>
   <url>
-    <loc>https://velcrypta.vercel.app/story/the-simulation-theorem</loc>
+    <loc>https://velcrypta.vercel.app/story/enfield-poltergeist</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-    <lastmod>2026-05-16</lastmod>
+    <priority>0.87</priority>
+    <lastmod>2026-05-30</lastmod>
+  </url>
+  <url>
+    <loc>https://velcrypta.vercel.app/story/spring-heeled-jack</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.83</priority>
+    <lastmod>2026-05-30</lastmod>
   </url>
 
 </urlset>
