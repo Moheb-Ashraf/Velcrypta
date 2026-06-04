@@ -1,105 +1,72 @@
 import { useEffect } from 'react';
 
-const BASE_URL = 'https://velcrypta.vercel.app';
-const DEFAULT_IMAGE = `${BASE_URL}/velcrypta-logo.jpg`;
+const BASE = 'https://velcrypta.vercel.app';
+const DEFAULT_IMG = `${BASE}/velcrypta-logo.jpg`;
 
-function setMeta(name, content, attr = 'name') {
+function setMeta(attr, name, content) {
   if (!content) return;
   let el = document.querySelector(`meta[${attr}="${name}"]`);
-  if (!el) {
-    el = document.createElement('meta');
-    el.setAttribute(attr, name);
-    document.head.appendChild(el);
-  }
+  if (!el) { el = document.createElement('meta'); el.setAttribute(attr, name); document.head.appendChild(el); }
   el.setAttribute('content', content);
 }
 
-function setJsonLd(id, data) {
-  let el = document.querySelector(`script[data-schema-id="${id}"]`);
-  if (!el) {
-    el = document.createElement('script');
-    el.type = 'application/ld+json';
-    el.setAttribute('data-schema-id', id);
-    document.head.appendChild(el);
-  }
+function setCanonical(url) {
+  let el = document.querySelector('link[rel="canonical"]');
+  if (!el) { el = document.createElement('link'); el.rel = 'canonical'; document.head.appendChild(el); }
+  el.href = url;
+}
+
+function setJsonLd(data) {
+  let el = document.querySelector('script[data-vel-schema]');
+  if (!el) { el = document.createElement('script'); el.type = 'application/ld+json'; el.setAttribute('data-vel-schema','1'); document.head.appendChild(el); }
   el.textContent = JSON.stringify(data);
 }
 
 export function useSEO({ title, description, keywords, image, url, type = 'website', structuredData }) {
   useEffect(() => {
-    const fullTitle = title
-      ? `${title} — Velcrypta`
-      : 'Velcrypta — Uncover the Hidden. Fear the Unknown.';
-    const fullUrl = url ? `${BASE_URL}${url}` : BASE_URL;
-    const img = image || DEFAULT_IMAGE;
+    const fullTitle = title || 'Velcrypta — Uncover the Hidden. Fear the Unknown.';
+    const fullUrl   = url ? `${BASE}${url}` : BASE;
+    const img       = image || DEFAULT_IMG;
 
-    // Title
     document.title = fullTitle;
+    setCanonical(fullUrl);
 
-    // Canonical
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = document.createElement('link');
-      canonical.rel = 'canonical';
-      document.head.appendChild(canonical);
-    }
-    canonical.href = fullUrl;
+    setMeta('name','description', description);
+    setMeta('name','keywords', keywords);
 
-    // Primary meta
-    setMeta('description', description);
-    if (keywords) setMeta('keywords', keywords);
+    setMeta('property','og:title', fullTitle);
+    setMeta('property','og:description', description);
+    setMeta('property','og:url', fullUrl);
+    setMeta('property','og:image', img);
+    setMeta('property','og:type', type);
 
-    // OG
-    setMeta('og:title', fullTitle, 'property');
-    setMeta('og:description', description, 'property');
-    setMeta('og:url', fullUrl, 'property');
-    setMeta('og:image', img, 'property');
-    setMeta('og:type', type, 'property');
+    setMeta('name','twitter:title', fullTitle);
+    setMeta('name','twitter:description', description);
+    setMeta('name','twitter:image', img);
 
-    // Twitter
-    setMeta('twitter:title', fullTitle);
-    setMeta('twitter:description', description);
-    setMeta('twitter:image', img);
-
-    // Structured data
-    if (structuredData) {
-      setJsonLd('page-schema', structuredData);
-    }
+    if (structuredData) setJsonLd(structuredData);
   }, [title, description, keywords, image, url, type, structuredData]);
 }
 
-// Helper: generate Article schema for a story
 export function storySchema(story) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    '@id': `${BASE_URL}/story/${story.id}`,
     'headline': story.title,
     'description': story.excerpt,
     'image': story.image,
     'datePublished': story.date,
-    'dateModified': '2026-05-16',
-    'author': {
-      '@type': 'Organization',
-      'name': 'Velcrypta',
-      'url': BASE_URL
-    },
-    'publisher': {
-      '@type': 'Organization',
-      'name': 'Velcrypta',
-      'logo': { '@type': 'ImageObject', 'url': DEFAULT_IMAGE }
-    },
-    'mainEntityOfPage': { '@type': 'WebPage', '@id': `${BASE_URL}/story/${story.id}` },
+    'dateModified': '2026-05-30',
+    'author': { '@type': 'Organization', 'name': 'Velcrypta', 'url': BASE },
+    'publisher': { '@type': 'Organization', 'name': 'Velcrypta', 'logo': { '@type': 'ImageObject', 'url': DEFAULT_IMG } },
+    'mainEntityOfPage': { '@type': 'WebPage', '@id': `${BASE}/story/${story.id}` },
     'articleSection': story.categoryLabel,
-    'keywords': `${story.categoryLabel}, mystery, horror, unsolved, ${story.title}`,
-    'wordCount': story.content?.join(' ').split(' ').length || 500,
-    'timeRequired': `PT${story.readTime?.replace(' min', '')}M`,
+    'keywords': `${story.title}, ${story.categoryLabel}, unsolved mystery, horror, true crime, velcrypta`,
+    'url': `${BASE}/story/${story.id}`,
     'inLanguage': 'en-US',
-    'url': `${BASE_URL}/story/${story.id}`
   };
 }
 
-// Helper: BreadcrumbList schema
 export function breadcrumbSchema(items) {
   return {
     '@context': 'https://schema.org',
@@ -108,7 +75,7 @@ export function breadcrumbSchema(items) {
       '@type': 'ListItem',
       'position': i + 1,
       'name': item.name,
-      'item': `${BASE_URL}${item.path}`
-    }))
+      'item': `${BASE}${item.path}`,
+    })),
   };
 }
