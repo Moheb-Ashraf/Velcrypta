@@ -1,9 +1,10 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import StoryCard from '../components/StoryCard';
 import ReadingProgress from '../components/ReadingProgress';
-import { getStoryById, getRelatedStories } from '../data/stories';
+import { getStoryById, getRelatedStories, stories } from '../data/stories';
 import { useSEO, storySchema, breadcrumbSchema } from '../hooks/useSEO';
+import { useLanguage } from '../context/LanguageContext';
 
 function ParagraphBlock({ text, index }) {
   const ref = useRef(null);
@@ -45,11 +46,14 @@ function ParagraphBlock({ text, index }) {
 }
 
 function TableOfContents({ items }) {
+  const { lang } = useLanguage();
   return (
     <nav className="mb-12 p-6 border border-gold/15 bg-crypt/60 relative overflow-hidden"
       aria-label="Table of contents">
       <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-gold/60 via-crimson/40 to-transparent" />
-      <p className="text-gold/70 text-xs font-sans tracking-[0.25em] uppercase mb-4 pl-3">In This Story</p>
+      <p className="text-gold/70 text-xs font-sans tracking-[0.25em] uppercase mb-4 pl-3">
+        {lang === 'ar' ? 'محتويات القصة' : 'In This Story'}
+      </p>
       <ul className="space-y-2 pl-3">
         {items.map((item, i) => (
           <li key={i} className="flex items-center gap-3">
@@ -69,24 +73,25 @@ function TableOfContents({ items }) {
 export default function StoryPage() {
   const { id } = useParams();
   const story = getStoryById(id);
-  const [readingTime, setReadingTime] = useState(0);
+  const navigate = useNavigate();
+  const { lang, t } = useLanguage();
+  const [votedOption, setVotedOption] = useState(null);
+  const [copiedLink, setCopiedLink] = useState(false);
   const articleRef = useRef(null);
 
   useEffect(() => { window.scrollTo(0, 0); }, [id]);
 
-  // Real reading time tracker
-  useEffect(() => {
-    const start = Date.now();
-    return () => {
-      const elapsed = Math.round((Date.now() - start) / 1000 / 60);
-      setReadingTime(elapsed);
-    };
-  }, [id]);
+  const title = lang === 'ar' && story?.titleAr ? story.titleAr : story?.title;
+  const subtitle = lang === 'ar' && story?.subtitleAr ? story.subtitleAr : story?.subtitle;
+  const excerpt = lang === 'ar' && story?.excerptAr ? story.excerptAr : story?.excerpt;
+  const content = lang === 'ar' && story?.contentAr ? story.contentAr : story?.content;
+  const categoryLabel = lang === 'ar' && story?.categoryLabelAr ? story.categoryLabelAr : story?.categoryLabel;
+  const keywords = lang === 'ar' ? story?.seoKeywordsAr : story?.seoKeywordsEn;
 
   useSEO(story ? {
-    title: story.title,
-    description: story.excerpt,
-    keywords: `${story.title}, ${story.categoryLabel}, unsolved mystery, horror story, true crime, Velcrypta, ${story.date}`,
+    title: title,
+    description: excerpt,
+    keywords: keywords || `${title}, ${categoryLabel}, unsolved mystery, horror story, true crime, Velcrypta`,
     image: story.image,
     url: `/story/${story.id}`,
     type: 'article',
@@ -95,10 +100,10 @@ export default function StoryPage() {
       '@graph': [
         storySchema(story),
         breadcrumbSchema([
-          { name: 'Home', path: '/' },
-          { name: 'Stories', path: '/stories' },
-          { name: story.categoryLabel, path: `/categories/${story.category}` },
-          { name: story.title, path: `/story/${story.id}` },
+          { name: t('home'), path: '/' },
+          { name: t('stories'), path: '/stories' },
+          { name: categoryLabel, path: `/categories/${story.category}` },
+          { name: title, path: `/story/${story.id}` },
         ])
       ]
     }
@@ -120,6 +125,18 @@ export default function StoryPage() {
 
   const relatedStories = getRelatedStories(story.relatedIds);
 
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2500);
+  };
+
+  const handleRandomStory = () => {
+    const otherStories = stories.filter(s => s.id !== story.id);
+    const random = otherStories[Math.floor(Math.random() * otherStories.length)];
+    if (random) navigate(`/story/${random.id}`);
+  };
+
   return (
     <div className="min-h-screen bg-void">
       <ReadingProgress />
@@ -129,7 +146,7 @@ export default function StoryPage() {
         {/* Parallax image */}
         <img
           src={story.image}
-          alt={story.title}
+          alt={title}
           className="w-full h-full object-cover opacity-35"
           style={{ transform: 'scale(1.08)', transformOrigin: 'center center' }}
         />
@@ -152,13 +169,13 @@ export default function StoryPage() {
           <div className="max-w-4xl mx-auto">
             <nav className="flex items-center gap-2 text-smoke/60 text-xs font-sans tracking-widest uppercase"
               aria-label="Breadcrumb">
-              <Link to="/" className="hover:text-gold/70 transition-colors duration-300">Home</Link>
+              <Link to="/" className="hover:text-gold/70 transition-colors duration-300">{t('home')}</Link>
               <span className="text-smoke/30">›</span>
-              <Link to="/stories" className="hover:text-gold/70 transition-colors duration-300">Stories</Link>
+              <Link to="/stories" className="hover:text-gold/70 transition-colors duration-300">{t('stories')}</Link>
               <span className="text-smoke/30">›</span>
-              <Link to={`/categories/${story.category}`} className="hover:text-gold/70 transition-colors duration-300">{story.categoryLabel}</Link>
+              <Link to={`/categories/${story.category}`} className="hover:text-gold/70 transition-colors duration-300">{categoryLabel}</Link>
               <span className="text-smoke/30">›</span>
-              <span className="text-smoke/40 truncate max-w-32">{story.title}</span>
+              <span className="text-smoke/40 truncate max-w-32">{title}</span>
             </nav>
           </div>
         </div>
@@ -172,27 +189,27 @@ export default function StoryPage() {
                 to={`/categories/${story.category}`}
                 className="category-pill px-3 py-1 bg-crimson/80 hover:bg-crimson text-bone/80 hover:text-bone transition-colors duration-300"
               >
-                {story.categoryLabel}
+                {categoryLabel}
               </Link>
               <span className="text-smoke text-xs font-sans">{story.date}</span>
               <span className="text-smoke/30 text-xs">·</span>
-              <span className="text-smoke text-xs font-sans">{story.readTime} read</span>
+              <span className="text-smoke text-xs font-sans">{story.readTime} {t('readTime')}</span>
               <span className="text-smoke/30 text-xs">·</span>
-              <span className="text-smoke text-xs font-sans">{story.content?.length || 0} sections</span>
+              <span className="text-smoke text-xs font-sans">{content?.length || 0} {lang === 'ar' ? 'أجزاء' : 'sections'}</span>
             </div>
 
             {/* Title */}
             <h1
-              className="font-gothic font-black text-bone leading-[1.05] mb-4"
+              className="font-gothic font-black text-bone leading-[1.1] mb-4"
               style={{
-                fontSize: 'clamp(2rem, 5vw, 4.5rem)',
+                fontSize: 'clamp(2rem, 5vw, 4.2rem)',
                 textShadow: '0 2px 40px rgba(0,0,0,0.9), 0 0 80px rgba(0,0,0,0.5)',
               }}
             >
-              {story.title}
+              {title}
             </h1>
             <p className="font-body text-lg md:text-xl text-ash/80 italic leading-relaxed max-w-2xl">
-              {story.subtitle}
+              {subtitle}
             </p>
           </div>
         </div>
@@ -212,26 +229,37 @@ export default function StoryPage() {
                 <span className="text-xl group-hover:-translate-x-1 transition-transform duration-300">←</span>
                 <span className="text-xs font-sans tracking-widest uppercase"
                   style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>
-                  Back
+                  {t('backToStories')}
                 </span>
               </Link>
               <div className="w-px h-16 bg-gold/15" />
-              {/* Category link */}
-              <Link to={`/categories/${story.category}`}
-                className="text-xs font-sans tracking-widest uppercase text-smoke/40 hover:text-gold/60 transition-colors duration-300"
-                style={{ writingMode: 'vertical-rl' }}>
-                {story.categoryLabel}
-              </Link>
+
+              {/* Random story button */}
+              <button
+                onClick={handleRandomStory}
+                className="p-2 border border-gold/30 rounded text-gold hover:bg-gold/10 text-xs transition-colors"
+                title={t('randomStory')}
+              >
+                🎲
+              </button>
             </div>
           </aside>
 
           {/* ── MAIN ARTICLE ── */}
           <article ref={articleRef} className="lg:col-span-7">
             {/* Mobile back */}
-            <Link to="/stories"
-              className="flex lg:hidden items-center gap-2 text-smoke/50 text-xs font-sans tracking-widest uppercase hover:text-gold transition-colors duration-300 mb-10">
-              ← Back to Stories
-            </Link>
+            <div className="flex items-center justify-between lg:hidden mb-8">
+              <Link to="/stories"
+                className="flex items-center gap-2 text-smoke/50 text-xs font-sans tracking-widest uppercase hover:text-gold transition-colors duration-300">
+                {t('backToStories')}
+              </Link>
+              <button
+                onClick={handleRandomStory}
+                className="px-3 py-1 text-xs border border-gold/40 text-gold rounded"
+              >
+                {t('randomStory')}
+              </button>
+            </div>
 
             {/* Opening ornament */}
             <div className="flex items-center gap-6 mb-12">
@@ -244,51 +272,114 @@ export default function StoryPage() {
             </div>
 
             {/* Table of contents */}
-            {story.content?.length > 3 && (
-              <TableOfContents items={story.content.map(p => p.slice(0, 90))} />
+            {content?.length > 3 && (
+              <TableOfContents items={content.map(p => p.slice(0, 90))} />
             )}
 
             {/* Lead / excerpt */}
             <p className="font-body text-2xl text-bone/90 leading-[1.85] mb-10 italic"
-              style={{ borderLeft: '3px solid rgba(107,15,26,0.6)', paddingLeft: '1.5rem' }}>
-              {story.excerpt}
+              style={{
+                borderLeft: lang === 'ar' ? 'none' : '3px solid rgba(107,15,26,0.6)',
+                borderRight: lang === 'ar' ? '3px solid rgba(107,15,26,0.6)' : 'none',
+                paddingLeft: lang === 'ar' ? '0' : '1.5rem',
+                paddingRight: lang === 'ar' ? '1.5rem' : '0',
+              }}>
+              {excerpt}
             </p>
 
             <div className="divider-gold mb-12" />
 
             {/* Content paragraphs */}
             <div>
-              {story.content?.map((para, i) => (
+              {content?.map((para, i) => (
                 <ParagraphBlock key={i} text={para} index={i} />
               ))}
             </div>
 
             {/* Hint */}
-            <p className="text-smoke/30 text-xs font-sans italic text-center mt-4 mb-12">
-              Click any paragraph to highlight it
+            <p className="text-smoke/30 text-xs font-sans italic text-center mt-4 mb-8">
+              {lang === 'ar' ? 'اضغط على أي فقرة لتمييزها وتحديدها' : 'Click any paragraph to highlight it'}
             </p>
 
-            {/* YouTube embed */}
-            {story.videoId && (
-              <div className="my-14">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="h-px flex-1 bg-gold/15" />
-                  <span className="text-gold/60 text-xs font-sans tracking-[0.3em] uppercase">Watch</span>
-                  <div className="h-px flex-1 bg-gold/15" />
-                </div>
-                <div className="relative w-full border border-gold/15"
-                  style={{ paddingBottom: '56.25%', background: '#0D0D0D' }}>
-                  <iframe
-                    className="absolute inset-0 w-full h-full"
-                    src={`https://www.youtube.com/embed/${story.videoId}?rel=0&color=white`}
-                    title={story.title}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    loading="lazy"
-                  />
-                </div>
+            {/* Social Share Bar */}
+            <div className="my-10 p-6 border border-gold/20 bg-crypt/50 rounded flex flex-wrap items-center justify-between gap-4">
+              <span className="text-gold/80 text-xs font-sans tracking-wider font-bold">
+                {t('shareStory')}
+              </span>
+              <div className="flex items-center gap-3">
+                <a
+                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${title} — ${window.location.href}`)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 bg-green-900/40 hover:bg-green-800/60 text-green-400 text-xs border border-green-700/50 rounded transition-all"
+                >
+                  WhatsApp
+                </a>
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(window.location.href)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 bg-blue-950/40 hover:bg-blue-900/60 text-blue-400 text-xs border border-blue-700/50 rounded transition-all"
+                >
+                  X (Twitter)
+                </a>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 bg-indigo-950/40 hover:bg-indigo-900/60 text-indigo-400 text-xs border border-indigo-700/50 rounded transition-all"
+                >
+                  Facebook
+                </a>
+                <button
+                  onClick={handleCopyLink}
+                  className="px-3 py-1.5 bg-gold/10 hover:bg-gold/20 text-gold text-xs border border-gold/40 rounded transition-all"
+                >
+                  {copiedLink ? (lang === 'ar' ? 'تم النسخ!' : 'Copied!') : (lang === 'ar' ? 'نسخ الرابط' : 'Copy Link')}
+                </button>
               </div>
-            )}
+            </div>
+
+            {/* Interactive Theory Vote */}
+            <div className="my-12 p-8 border border-crimson/40 bg-void/80 rounded relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-crimson/10 rounded-full blur-2xl pointer-events-none" />
+              <h3 className="font-gothic text-xl text-bone font-bold mb-2">
+                {t('voteTheory')}
+              </h3>
+              <p className="text-ash text-xs mb-6">
+                {lang === 'ar'
+                  ? 'شاركنا رأيك ونظريتك حول السر الأكبر في هذه القصة:'
+                  : 'Cast your vote on what truly happened in this cold case:'}
+              </p>
+
+              <div className="space-y-3 mb-6">
+                {[
+                  lang === 'ar' ? 'ظاهرة خارقة للطبيعة لا يفسرها العلم' : 'Supernatural phenomenon beyond current science',
+                  lang === 'ar' ? 'مؤامرة حكومية سرية وجريمة مدبرة' : 'Covert government conspiracy or planned crime',
+                  lang === 'ar' ? 'حادث طبيعي مأساوي تم تهويله' : 'Tragic natural occurrence distorted over time',
+                  lang === 'ar' ? 'سر آخر لم يكتشف بعد' : 'Something completely unknown yet to be discovered'
+                ].map((opt, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setVotedOption(idx)}
+                    className={`w-full text-left px-4 py-3 rounded border text-sm transition-all duration-300 flex items-center justify-between ${
+                      votedOption === idx
+                        ? 'border-gold bg-gold/10 text-gold font-bold'
+                        : 'border-white/10 bg-crypt/40 text-bone/80 hover:border-gold/40'
+                    }`}
+                  >
+                    <span>{opt}</span>
+                    {votedOption === idx && <span className="text-gold font-bold">✓</span>}
+                  </button>
+                ))}
+              </div>
+
+              {votedOption !== null && (
+                <div className="p-3 bg-gold/10 border border-gold/30 rounded text-gold text-xs text-center font-bold">
+                  {t('voted')}
+                </div>
+              )}
+            </div>
 
             {/* Closing ornament */}
             <div className="flex items-center gap-6 mt-14">
@@ -299,11 +390,21 @@ export default function StoryPage() {
 
             {/* End-of-story CTA */}
             <div className="mt-12 p-8 border border-white/5 bg-crypt/40 text-center">
-              <p className="text-smoke text-sm font-sans mb-4">More awaits in the archive.</p>
-              <Link to="/stories"
-                className="btn-primary inline-block px-8 py-3 border border-gold/30 text-gold/70 text-xs tracking-[0.2em] uppercase font-sans hover:border-gold/60 hover:text-gold transition-all duration-400">
-                Continue Reading
-              </Link>
+              <p className="text-smoke text-sm font-sans mb-4">
+                {lang === 'ar' ? 'المزيد من القضايا الغامضة تنتظرك في الأرشيف.' : 'More awaits in the archive.'}
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <Link to="/stories"
+                  className="btn-primary inline-block px-8 py-3 border border-gold/30 text-gold/70 text-xs tracking-[0.2em] uppercase font-sans hover:border-gold/60 hover:text-gold transition-all duration-400">
+                  {t('allStories')}
+                </Link>
+                <button
+                  onClick={handleRandomStory}
+                  className="px-6 py-3 border border-crimson/40 text-bone text-xs uppercase tracking-wider hover:border-crimson hover:bg-crimson/20 transition-all"
+                >
+                  {t('randomStory')}
+                </button>
+              </div>
             </div>
           </article>
 
@@ -312,13 +413,15 @@ export default function StoryPage() {
             <div className="sticky top-28 space-y-8">
               {/* Story info card */}
               <div className="p-6 border border-white/5 bg-crypt/50">
-                <p className="text-gold/60 text-xs font-sans tracking-[0.2em] uppercase mb-4">Story Info</p>
+                <p className="text-gold/60 text-xs font-sans tracking-[0.2em] uppercase mb-4">
+                  {lang === 'ar' ? 'معلومات القصة' : 'Story Info'}
+                </p>
                 <div className="space-y-3">
                   {[
-                    { label: 'Category', val: story.categoryLabel },
-                    { label: 'Date', val: story.date },
-                    { label: 'Read Time', val: story.readTime },
-                    { label: 'Sections', val: `${story.content?.length || 0} parts` },
+                    { label: lang === 'ar' ? 'التصنيف' : 'Category', val: categoryLabel },
+                    { label: lang === 'ar' ? 'التاريخ' : 'Date', val: story.date },
+                    { label: lang === 'ar' ? 'وقت القراءة' : 'Read Time', val: story.readTime },
+                    { label: lang === 'ar' ? 'الأجزاء' : 'Sections', val: `${content?.length || 0}` },
                   ].map(({ label, val }) => (
                     <div key={label} className="flex justify-between items-start gap-2">
                       <span className="text-smoke text-xs font-sans uppercase tracking-wider">{label}</span>
@@ -331,28 +434,32 @@ export default function StoryPage() {
                   <Link
                     to={`/categories/${story.category}`}
                     className="text-gold/60 text-xs font-sans tracking-widest uppercase hover:text-gold transition-colors duration-300">
-                    More in {story.categoryLabel} →
+                    {lang === 'ar' ? `المزيد في قسم ${categoryLabel}` : `More in ${categoryLabel}`} →
                   </Link>
                 </div>
               </div>
 
               {/* Related previews */}
-              {relatedStories.slice(0, 2).map(s => (
-                <Link key={s.id} to={`/story/${s.id}`}
-                  className="group block border border-white/5 hover:border-gold/20 transition-colors duration-400 overflow-hidden">
-                  <div className="relative h-28 overflow-hidden">
-                    <img src={s.image} alt={s.title}
-                      className="w-full h-full object-cover opacity-40 group-hover:opacity-55 transition-opacity duration-500 card-image" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-void to-transparent" />
-                  </div>
-                  <div className="p-4">
-                    <span className="category-pill text-gold/50 text-xs">{s.categoryLabel}</span>
-                    <h4 className="font-gothic text-sm font-bold text-bone/80 group-hover:text-gold transition-colors duration-300 mt-1 leading-snug">
-                      {s.title}
-                    </h4>
-                  </div>
-                </Link>
-              ))}
+              {relatedStories.slice(0, 2).map(s => {
+                const rTitle = lang === 'ar' && s.titleAr ? s.titleAr : s.title;
+                const rCat = lang === 'ar' && s.categoryLabelAr ? s.categoryLabelAr : s.categoryLabel;
+                return (
+                  <Link key={s.id} to={`/story/${s.id}`}
+                    className="group block border border-white/5 hover:border-gold/20 transition-colors duration-400 overflow-hidden">
+                    <div className="relative h-28 overflow-hidden">
+                      <img src={s.image} alt={rTitle}
+                        className="w-full h-full object-cover opacity-40 group-hover:opacity-55 transition-opacity duration-500 card-image" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-void to-transparent" />
+                    </div>
+                    <div className="p-4">
+                      <span className="category-pill text-gold/50 text-xs">{rCat}</span>
+                      <h4 className="font-gothic text-sm font-bold text-bone/80 group-hover:text-gold transition-colors duration-300 mt-1 leading-snug">
+                        {rTitle}
+                      </h4>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </aside>
         </div>
@@ -364,9 +471,13 @@ export default function StoryPage() {
           <div className="max-w-6xl mx-auto px-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="h-px w-8 bg-gold/40" />
-              <p className="text-gold/60 text-xs tracking-[0.25em] uppercase font-sans">The Darkness Continues</p>
+              <p className="text-gold/60 text-xs tracking-[0.25em] uppercase font-sans">
+                {lang === 'ar' ? 'قصص وروايات ذات صلة' : 'The Darkness Continues'}
+              </p>
             </div>
-            <h2 className="font-gothic text-4xl font-bold text-bone mb-12">Related Stories</h2>
+            <h2 className="font-gothic text-4xl font-bold text-bone mb-12">
+              {t('relatedStories')}
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {relatedStories.slice(0, 3).map(s => (
                 <StoryCard key={s.id} story={s} />

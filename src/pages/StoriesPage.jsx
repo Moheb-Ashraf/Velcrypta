@@ -3,28 +3,43 @@ import { Link } from 'react-router-dom';
 import StoryCard from '../components/StoryCard';
 import { stories, categories } from '../data/stories';
 import { useSEO, breadcrumbSchema } from '../hooks/useSEO';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function StoriesPage() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const { lang, t } = useLanguage();
 
   useSEO({
-    title: 'All Stories — Mysteries, True Crime & Horror',
-    description: 'Browse the complete Velcrypta archive. Unsolved mysteries, true crime cases, dark theories, supernatural encounters, and horror stories. Dyatlov Pass, Flight 19, Hinterkaifeck, and more.',
-    keywords: 'mystery stories archive, horror stories, true crime archive, unsolved cases, supernatural stories, dark theories, Dyatlov Pass, Flight 19, Hinterkaifeck murders',
+    title: lang === 'ar' ? 'جميع القصص والأرشيف — فيلكريبتا' : 'All Stories — Mysteries, True Crime & Horror',
+    description: lang === 'ar'
+      ? 'تصفح أرشيف قصص الغموض والجرائم الواقعية والألغاز غير المحلولة بالكامل في موقع فيلكريبتا.'
+      : 'Browse the complete Velcrypta archive. Unsolved mysteries, true crime cases, dark theories, supernatural encounters, and horror stories.',
+    keywords: 'mystery stories archive, horror stories, true crime archive, unsolved cases, supernatural stories, dark theories, فيلكريبتا, قصص غموض, أسرار',
     url: '/stories',
     structuredData: breadcrumbSchema([
-      { name: 'Home', path: '/' },
-      { name: 'Stories', path: '/stories' },
+      { name: t('home'), path: '/' },
+      { name: t('stories'), path: '/stories' },
     ])
   });
 
   const filtered = stories.filter(s => {
     const matchCat = activeCategory === 'all' || s.category === activeCategory;
     const q = searchQuery.toLowerCase();
-    const matchSearch = !q || s.title.toLowerCase().includes(q) || s.excerpt.toLowerCase().includes(q) || s.categoryLabel.toLowerCase().includes(q);
+    const title = lang === 'ar' && s.titleAr ? s.titleAr.toLowerCase() : s.title.toLowerCase();
+    const excerpt = lang === 'ar' && s.excerptAr ? s.excerptAr.toLowerCase() : s.excerpt.toLowerCase();
+    const matchSearch = !q || title.includes(q) || excerpt.includes(q) || s.categoryLabel.toLowerCase().includes(q);
     return matchCat && matchSearch;
   });
+
+  const catOptions = [
+    { id: 'all', label: `${t('categoryAll')} (${stories.length})` },
+    ...categories.map(c => {
+      const cLabel = lang === 'ar' && c.labelAr ? c.labelAr : c.label;
+      const count = stories.filter(s => s.category === c.id).length;
+      return { id: c.id, label: `${cLabel} (${count})` };
+    })
+  ];
 
   return (
     <div className="min-h-screen bg-void pt-24">
@@ -35,16 +50,18 @@ export default function StoriesPage() {
         <div className="max-w-6xl mx-auto px-6 relative z-10">
           <nav className="flex items-center gap-2 text-smoke/50 text-xs font-sans tracking-widest uppercase mb-8"
             aria-label="Breadcrumb">
-            <Link to="/" className="hover:text-gold/60 transition-colors">Home</Link>
+            <Link to="/" className="hover:text-gold/60 transition-colors">{t('home')}</Link>
             <span className="text-smoke/30">›</span>
-            <span className="text-ash/60">Stories</span>
+            <span className="text-ash/60">{t('stories')}</span>
           </nav>
-          <p className="text-gold/60 text-xs tracking-[0.28em] uppercase font-sans mb-3">Archive</p>
+          <p className="text-gold/60 text-xs tracking-[0.28em] uppercase font-sans mb-3">
+            {lang === 'ar' ? 'الأرشيف الكامل' : 'Archive'}
+          </p>
           <h1 className="font-gothic text-5xl md:text-6xl font-black text-bone mb-4 leading-tight">
-            All Stories
+            {t('allStories')}
           </h1>
           <p className="text-ash/60 font-sans text-base max-w-xl leading-relaxed mb-2">
-            Every account of the inexplicable, unsolved, and deeply disturbing — collected in one place.
+            {t('allStoriesSubtitle')}
           </p>
           <div className="mt-5 h-px w-16 bg-gold/40" />
         </div>
@@ -60,7 +77,7 @@ export default function StoriesPage() {
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search stories…"
+              placeholder={t('searchPlaceholder')}
               className="w-full bg-crypt/60 border border-white/10 text-bone/80 placeholder:text-smoke/40 text-sm font-sans px-4 py-2.5 pl-9 focus:outline-none focus:border-gold/40 transition-colors duration-300"
               style={{ letterSpacing: '0.02em' }}
             />
@@ -68,12 +85,12 @@ export default function StoriesPage() {
           </div>
           {/* Category tabs */}
           <div className="flex items-center gap-0 overflow-x-auto">
-            {[{ id: 'all', label: `All (${stories.length})` }, ...categories.map(c => ({ id: c.id, label: `${c.label} (${stories.filter(s => s.category === c.id).length})` }))].map(({ id, label }) => (
+            {catOptions.map(({ id, label }) => (
               <button
                 key={id}
                 onClick={() => setActiveCategory(id)}
                 className={`flex-shrink-0 px-4 py-3 text-xs font-sans tracking-[0.15em] uppercase border-b-2 transition-all duration-300 ${
-                  activeCategory === id ? 'border-gold text-gold' : 'border-transparent text-smoke hover:text-ash'
+                  activeCategory === id ? 'border-gold text-gold font-bold' : 'border-transparent text-smoke hover:text-ash'
                 }`}
               >
                 {label}
@@ -87,14 +104,16 @@ export default function StoriesPage() {
       <div className="max-w-6xl mx-auto px-6 py-16">
         {filtered.length === 0 ? (
           <div className="text-center py-24">
-            <p className="font-gothic text-3xl text-ash/50 mb-4">Nothing found in the dark.</p>
+            <p className="font-gothic text-3xl text-ash/50 mb-4">{t('noResults')}</p>
             <button onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}
-              className="text-gold text-sm font-sans underline">Clear filters</button>
+              className="text-gold text-sm font-sans underline">
+              {lang === 'ar' ? 'إعادة ضبط البحث' : 'Clear filters'}
+            </button>
           </div>
         ) : (
           <>
             <p className="text-smoke/50 text-xs font-sans tracking-wider mb-8 uppercase">
-              {filtered.length} {filtered.length === 1 ? 'story' : 'stories'} found
+              {filtered.length} {lang === 'ar' ? 'قصة مسجلة' : (filtered.length === 1 ? 'story found' : 'stories found')}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filtered.map((story, i) => (

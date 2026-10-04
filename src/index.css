@@ -17,6 +17,15 @@
     cursor: none;
   }
 
+  .font-arabic,
+  .font-arabic body,
+  .font-arabic .font-gothic,
+  .font-arabic .font-body,
+  .font-arabic .font-sans-clean,
+  .font-arabic .story-paragraph {
+    font-family: 'Cairo', system-ui, sans-serif !important;
+  }
+
   /* Custom cursor */
   .cursor-dot {
     width: 8px; height: 8px;

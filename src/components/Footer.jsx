@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import VelcryptaLogo from './VelcryptaLogo';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Footer() {
+  const { lang, t } = useLanguage();
+
   return (
     <footer className="relative mt-24 border-t border-gold/10 overflow-hidden">
       {/* Atmospheric crimson glow */}
@@ -23,27 +26,32 @@ export default function Footer() {
             <Link to="/" className="inline-flex items-center gap-4 mb-6 group">
               <VelcryptaLogo size={56} showWordmark={false} />
               <span className="font-gothic text-lg font-bold tracking-[0.22em] text-bone/80 group-hover:text-gold transition-colors duration-500">
-                VELCRYPTA
+                {lang === 'ar' ? 'فيلكريبتا' : 'VELCRYPTA'}
               </span>
             </Link>
             <p className="text-smoke text-sm font-sans leading-relaxed mb-6 max-w-xs">
-              A repository of mysteries, unsolved cases, and truths that refuse to stay buried. Stories hidden in the shadows.
+              {t('footerText')}
             </p>
             {/* Tagline */}
             <p className="text-xs font-sans tracking-[0.2em] uppercase">
-              <span className="text-smoke/60">Uncover the </span>
-              <span className="text-crimson">Hidden</span>
-              <span className="text-smoke/60">. Fear the </span>
-              <span className="text-crimson">Unknown</span>
-              <span className="text-smoke/60">.</span>
+              <span className="text-smoke/60">{lang === 'ar' ? 'اكشف ' : 'Uncover the '}</span>
+              <span className="text-crimson">{lang === 'ar' ? 'المستور' : 'Hidden'}</span>
+              <span className="text-smoke/60">{lang === 'ar' ? '.. واخشى ' : '. Fear the '}</span>
+              <span className="text-crimson">{lang === 'ar' ? 'المجهول' : 'Unknown'}</span>
             </p>
           </div>
 
           {/* Navigate */}
           <div className="md:col-span-2 md:col-start-6">
-            <p className="text-gold/60 text-xs tracking-[0.25em] uppercase font-sans mb-5">Navigate</p>
+            <p className="text-gold/60 text-xs tracking-[0.25em] uppercase font-sans mb-5">
+              {lang === 'ar' ? 'التنقل' : 'Navigate'}
+            </p>
             <ul className="space-y-3">
-              {[{ to: '/', label: 'Home' }, { to: '/stories', label: 'All Stories' }, { to: '/categories', label: 'Categories' }].map(({ to, label }) => (
+              {[
+                { to: '/', label: t('home') },
+                { to: '/stories', label: t('allStories') },
+                { to: '/categories', label: t('categories') }
+              ].map(({ to, label }) => (
                 <li key={to}>
                   <Link to={to} className="text-smoke text-sm font-sans hover:text-gold transition-colors duration-300 flex items-center gap-2 group">
                     <span className="w-3 h-px bg-smoke/30 group-hover:bg-gold/60 group-hover:w-5 transition-all duration-300" />
@@ -56,13 +64,15 @@ export default function Footer() {
 
           {/* Categories */}
           <div className="md:col-span-2">
-            <p className="text-gold/60 text-xs tracking-[0.25em] uppercase font-sans mb-5">Explore</p>
+            <p className="text-gold/60 text-xs tracking-[0.25em] uppercase font-sans mb-5">
+              {lang === 'ar' ? 'الأقسام' : 'Explore'}
+            </p>
             <ul className="space-y-3">
               {[
-                { to: '/categories/mysteries', label: 'Mysteries' },
-                { to: '/categories/true-crime', label: 'True Crime' },
-                { to: '/categories/dark-theories', label: 'Dark Theories' },
-                { to: '/categories/supernatural', label: 'Supernatural' },
+                { to: '/categories/mysteries', label: t('mysteries') },
+                { to: '/categories/true-crime', label: t('trueCrime') },
+                { to: '/categories/dark-theories', label: t('darkTheories') },
+                { to: '/categories/supernatural', label: t('supernatural') },
               ].map(({ to, label }) => (
                 <li key={to}>
                   <Link to={to} className="text-smoke text-sm font-sans hover:text-gold transition-colors duration-300 flex items-center gap-2 group">
@@ -74,11 +84,16 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact / About */}
+          {/* Connect */}
           <div className="md:col-span-2">
-            <p className="text-gold/60 text-xs tracking-[0.25em] uppercase font-sans mb-5">Connect</p>
+            <p className="text-gold/60 text-xs tracking-[0.25em] uppercase font-sans mb-5">
+              {lang === 'ar' ? 'تواصل' : 'Connect'}
+            </p>
             <ul className="space-y-3">
-              {['About', 'Contact', 'Submit a Story', 'Newsletter'].map(label => (
+              {(lang === 'ar'
+                ? ['من نحن', 'اتصل بنا', 'أرسل قصة', 'النشرة البريدية']
+                : ['About', 'Contact', 'Submit a Story', 'Newsletter']
+              ).map(label => (
                 <li key={label}>
                   <span className="text-smoke text-sm font-sans hover:text-gold transition-colors duration-300 cursor-pointer flex items-center gap-2 group">
                     <span className="w-3 h-px bg-smoke/30 group-hover:bg-gold/60 group-hover:w-5 transition-all duration-300" />
@@ -96,18 +111,21 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-smoke/50 text-xs font-sans tracking-wider">
-            © {new Date().getFullYear()} Velcrypta. All rights reserved.
+            © {new Date().getFullYear()} Velcrypta. {t('rightsReserved')}
           </p>
           <div className="flex items-center gap-1">
             <VelcryptaLogo size={18} showWordmark={false} />
             <p className="text-smoke/40 text-xs font-sans tracking-wider italic ml-1">
-              "Not all who wander are lost. Some are never found."
+              {lang === 'ar'
+                ? '"ليس كل من ضل الطريق مفقوداً، بعضهم لم يُعثر عليه أبداً."'
+                : '"Not all who wander are lost. Some are never found."'
+              }
             </p>
           </div>
           <div className="flex items-center gap-4">
-            {['Privacy', 'Terms', 'Sitemap'].map(item => (
+            {(lang === 'ar' ? ['الخصوصية', 'الشروط', 'خريطة الموقع'] : ['Privacy', 'Terms', 'Sitemap']).map((item, idx) => (
               <a key={item}
-                href={item === 'Sitemap' ? '/sitemap.xml' : '#'}
+                href={idx === 2 ? '/sitemap.xml' : '#'}
                 className="text-smoke/40 text-xs font-sans hover:text-gold/60 transition-colors duration-300"
               >
                 {item}

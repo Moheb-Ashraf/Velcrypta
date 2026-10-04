@@ -6,6 +6,7 @@ import VelcryptaLogo from '../components/VelcryptaLogo';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useSEO } from '../hooks/useSEO';
 import { stories, categories, getFeaturedStories, getLatestStories } from '../data/stories';
+import { useLanguage } from '../context/LanguageContext';
 
 /* ─── Typewriter ─── */
 function useTypewriter(text, speed = 60, delay = 1000) {
@@ -60,6 +61,10 @@ const CAT_ICONS = { mysteries: '◈', 'true-crime': '⊕', 'dark-theories': '◉
 
 function CategoryCard({ category, index }) {
   const ref = useScrollReveal();
+  const { lang, t } = useLanguage();
+  const label = lang === 'ar' && category.labelAr ? category.labelAr : category.label;
+  const desc = lang === 'ar' && category.descriptionAr ? category.descriptionAr : category.description;
+
   return (
     <Link
       to={`/categories/${category.id}`}
@@ -81,16 +86,18 @@ function CategoryCard({ category, index }) {
         <div className="font-gothic text-4xl text-gold/20 group-hover:text-gold/50 transition-colors duration-500 mb-5 select-none">
           {CAT_ICONS[category.id]}
         </div>
-        <p className="text-gold/50 text-xs font-sans tracking-[0.2em] uppercase mb-2 group-hover:text-gold/80 transition-colors duration-400">Category</p>
+        <p className="text-gold/50 text-xs font-sans tracking-[0.2em] uppercase mb-2 group-hover:text-gold/80 transition-colors duration-400">
+          {lang === 'ar' ? 'قسم' : 'Category'}
+        </p>
         <h3 className="font-gothic text-xl font-bold text-bone group-hover:text-gold transition-colors duration-400 mb-3 leading-tight">
-          {category.label}
+          {label}
         </h3>
         <div className="h-px w-8 bg-gold/20 group-hover:bg-gold/40 mb-4 transition-all duration-700" style={{ width: '2rem' }}
           ref={el => el && el.closest('a')?.addEventListener('mouseenter', () => el.style.width = '100%')}
         />
-        <p className="text-smoke/70 text-sm font-sans leading-relaxed mb-5">{category.description}</p>
+        <p className="text-smoke/70 text-sm font-sans leading-relaxed mb-5">{desc}</p>
         <span className="text-gold text-xs font-sans tracking-[0.18em] uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-400">
-          Explore →
+          {lang === 'ar' ? 'تصفح ←' : 'Explore →'}
         </span>
       </div>
       {/* bottom glow line */}
@@ -104,10 +111,14 @@ function CategoryCard({ category, index }) {
    HOMEPAGE
 ═══════════════════════════════════════════ */
 export default function HomePage() {
+  const { lang, t } = useLanguage();
+
   useSEO({
-    title: 'Velcrypta — Uncover the Hidden. Fear the Unknown.',
-    description: 'Dark mystery storytelling platform. Horror, unsolved mysteries, true crime, and dark conspiracy theories.',
-    keywords: 'mystery platform, horror stories, unsolved mysteries, true crime, dark theories, supernatural, Velcrypta',
+    title: lang === 'ar' ? 'فيلكريبتا — اكشف المستور. واخشى المجهول' : 'Velcrypta — Uncover the Hidden. Fear the Unknown.',
+    description: lang === 'ar'
+      ? 'فيلكريبتا هي منصة قصص الغموض ورعب الجرائم الواقعية والألغاز غير المحلولة باللغتين العربية والإنجليزية.'
+      : 'Dark mystery storytelling platform. Horror, unsolved mysteries, true crime, and dark conspiracy theories.',
+    keywords: 'mystery platform, horror stories, unsolved mysteries, true crime, dark theories, supernatural, Velcrypta, فيلكريبتا, قصص رعب, جرائم واقعية',
     url: '/',
   });
 
@@ -115,7 +126,11 @@ export default function HomePage() {
   const latestStories   = getLatestStories(4);
   const heroImgRef      = useRef(null);
   const statsRef        = useScrollReveal();
-  const { displayed, done } = useTypewriter('Stories hidden in the shadows...', 55, 1400);
+
+  const typewriterText = lang === 'ar'
+    ? 'قصص وأسرار مخفية بين الظلال...'
+    : 'Stories hidden in the shadows...';
+  const { displayed, done } = useTypewriter(typewriterText, 55, 1400);
 
   /* Parallax */
   useEffect(() => {
@@ -151,7 +166,7 @@ export default function HomePage() {
           <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 55%, rgba(107,15,26,0.14) 0%, transparent 100%)' }} />
         </div>
 
-        {/* Content — pt accounts for fixed navbar (~80px) */}
+        {/* Content */}
         <div className="relative z-10 flex flex-col items-center text-center px-6 pt-28 pb-24 w-full max-w-4xl mx-auto">
 
           {/* Logo — animate in */}
@@ -168,20 +183,20 @@ export default function HomePage() {
           {/* Main heading */}
           <div style={{ animation: 'fadeUp 1s ease 0.55s both' }}>
             <h1 className="font-gothic font-black text-bone leading-[1.05] tracking-tight"
-              style={{ fontSize: 'clamp(2.8rem, 8vw, 7.5rem)' }}>
-              Enter the
+              style={{ fontSize: 'clamp(2.5rem, 7vw, 6.5rem)' }}>
+              {lang === 'ar' ? 'ادخل عالم' : 'Enter the'}
             </h1>
             <h1
               className="font-gothic font-black leading-[1.05] tracking-tight mb-8 glitch-title"
-              data-text="Unknown"
+              data-text={lang === 'ar' ? 'المجهول' : 'Unknown'}
               style={{
-                fontSize: 'clamp(2.8rem, 8vw, 7.5rem)',
+                fontSize: 'clamp(2.5rem, 7vw, 6.5rem)',
                 WebkitTextStroke: '1px rgba(194,169,106,0.55)',
                 color: 'transparent',
                 textShadow: '0 0 60px rgba(194,169,106,0.18)',
               }}
             >
-              Unknown
+              {lang === 'ar' ? 'المجهول' : 'Unknown'}
             </h1>
           </div>
 
@@ -205,30 +220,31 @@ export default function HomePage() {
               onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 30px rgba(194,169,106,0.18)'}
               onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
             >
-              Explore Stories
+              {t('allStories')}
             </Link>
             <Link
               to="/categories"
               className="w-full sm:w-auto px-8 py-3.5 border border-white/10 text-bone/45 text-xs tracking-[0.22em] uppercase font-sans hover:border-white/25 hover:text-bone/70 transition-all duration-400"
             >
-              Browse Categories
+              {t('categories')}
             </Link>
           </div>
 
           {/* Tagline */}
           <p className="mt-10 text-smoke/40 text-xs font-sans tracking-[0.22em] uppercase"
             style={{ animation: 'fadeUp 1s ease 1.1s both' }}>
-            <span className="text-smoke/30">Uncover the </span>
-            <span style={{ color: 'rgba(139,21,37,0.7)' }}>Hidden</span>
-            <span className="text-smoke/30">. Fear the </span>
-            <span style={{ color: 'rgba(139,21,37,0.7)' }}>Unknown</span>
-            <span className="text-smoke/30">.</span>
+            <span className="text-smoke/30">{lang === 'ar' ? 'اكشف ' : 'Uncover the '}</span>
+            <span style={{ color: 'rgba(139,21,37,0.7)' }}>{lang === 'ar' ? 'المستور' : 'Hidden'}</span>
+            <span className="text-smoke/30">{lang === 'ar' ? '.. واخشى ' : '. Fear the '}</span>
+            <span style={{ color: 'rgba(139,21,37,0.7)' }}>{lang === 'ar' ? 'المجهول' : 'Unknown'}</span>
           </p>
         </div>
 
         {/* Scroll indicator */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-drift pointer-events-none">
-          <span className="text-smoke/40 text-xs font-sans tracking-[0.28em] uppercase">Descend</span>
+          <span className="text-smoke/40 text-xs font-sans tracking-[0.28em] uppercase">
+            {lang === 'ar' ? 'هبوط' : 'Descend'}
+          </span>
           <div className="w-px h-10 overflow-hidden">
             <div className="w-full h-full bg-gradient-to-b from-gold/50 to-transparent"
               style={{ animation: 'scanline 1.6s ease-in-out infinite' }} />
@@ -248,10 +264,10 @@ export default function HomePage() {
           style={{ background: 'repeating-linear-gradient(90deg, rgba(194,169,106,0.015) 0, transparent 1px, transparent 80px, rgba(194,169,106,0.015) 80px)' }} />
         <div className="relative z-10 max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
-            { target: stories.length,  label: 'Hidden Stories' },
-            { target: categories.length, label: 'Dark Categories' },
-            { target: '∞',              label: 'Unanswered Questions' },
-            { target: 1922,             label: 'Earliest Case' },
+            { target: stories.length,  label: lang === 'ar' ? 'قصص وأسرار موثقة' : 'Hidden Stories' },
+            { target: categories.length, label: lang === 'ar' ? 'تصنيفات غامضة' : 'Dark Categories' },
+            { target: '∞',              label: lang === 'ar' ? 'أسئلة بلا إجابة' : 'Unanswered Questions' },
+            { target: 1922,             label: lang === 'ar' ? 'أقدم قضية مسجلة' : 'Earliest Case' },
           ].map(({ target, label }) => (
             <div key={label} className="group">
               <p className="font-gothic text-4xl font-black text-gold mb-1 group-hover:text-shadow-gold transition-all duration-300">
@@ -268,9 +284,9 @@ export default function HomePage() {
       ══════════════════════════════════════ */}
       <section className="max-w-6xl mx-auto px-6 py-24">
         <SectionTitle
-          eyebrow="Featured"
-          title="Stories of Darkness"
-          subtitle="Curated accounts from the edges of human understanding."
+          eyebrow={lang === 'ar' ? 'المميز' : 'Featured'}
+          title={t('featuredTitle')}
+          subtitle={t('featuredSubtitle')}
         />
         {/* Big card + 2 stacked */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
@@ -314,7 +330,10 @@ export default function HomePage() {
           <div className="text-center max-w-2xl">
             <p className="font-gothic text-5xl text-gold/10 mb-3 leading-none select-none">"</p>
             <blockquote className="font-gothic text-xl md:text-3xl text-bone/55 italic leading-relaxed">
-              The oldest and strongest emotion of mankind is fear.
+              {lang === 'ar'
+                ? 'أقدم وأقوى عاطفة لدى البشرية هي الخوف.. وأقدم وأقوى أنواع الخوف هو الخوف من المجهول.'
+                : 'The oldest and strongest emotion of mankind is fear, and the oldest and strongest kind of fear is fear of the unknown.'
+              }
             </blockquote>
             <cite className="block mt-5 text-gold/45 text-xs font-sans tracking-[0.28em] uppercase not-italic">
               — H.P. Lovecraft
@@ -329,13 +348,18 @@ export default function HomePage() {
       <section style={{ background: 'rgba(13,13,13,0.6)', borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
         <div className="max-w-6xl mx-auto px-6 py-24">
           <div className="flex items-end justify-between mb-12">
-            <SectionTitle eyebrow="Latest" title="Recently Unearthed" />
+            <SectionTitle
+              eyebrow={lang === 'ar' ? 'الأحدث' : 'Latest'}
+              title={lang === 'ar' ? 'أحدث القضايا المكتشفة' : 'Recently Unearthed'}
+            />
             <Link
               to="/stories"
               className="hidden md:flex items-center gap-2 text-gold/55 text-xs font-sans tracking-[0.2em] uppercase hover:text-gold transition-colors duration-300 group pb-1"
             >
-              All Stories
-              <span className="group-hover:translate-x-1 transition-transform duration-300 inline-block">→</span>
+              {t('allStories')}
+              <span className="group-hover:translate-x-1 transition-transform duration-300 inline-block">
+                {lang === 'ar' ? '←' : '→'}
+              </span>
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -353,9 +377,9 @@ export default function HomePage() {
       ══════════════════════════════════════ */}
       <section className="max-w-6xl mx-auto px-6 py-24">
         <SectionTitle
-          eyebrow="Explore"
-          title="The Categories"
-          subtitle="Choose your descent into the unknown."
+          eyebrow={lang === 'ar' ? 'استكشف' : 'Explore'}
+          title={lang === 'ar' ? 'الأقسام والتصنيفات' : 'The Categories'}
+          subtitle={lang === 'ar' ? 'اختر مسارك للغوص في أعماق المجهول.' : 'Choose your descent into the unknown.'}
           align="center"
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -376,13 +400,20 @@ export default function HomePage() {
             style={{ left: `${p}%`, background: 'linear-gradient(to bottom, transparent, rgba(194,169,106,0.06), transparent)' }} />
         ))}
         <div className="relative z-10 max-w-xl mx-auto px-6 text-center">
-          <p className="text-gold/45 text-xs font-sans tracking-[0.28em] uppercase mb-5">The Archive Awaits</p>
+          <p className="text-gold/45 text-xs font-sans tracking-[0.28em] uppercase mb-5">
+            {lang === 'ar' ? 'الأرشيف يناديك' : 'The Archive Awaits'}
+          </p>
           <h2 className="font-gothic text-5xl md:text-6xl font-black text-bone leading-tight mb-5">
-            Are you ready
-            <span className="block italic text-gold/65"> to know?</span>
+            {lang === 'ar' ? 'هل أنت مستعد' : 'Are you ready'}
+            <span className="block italic text-gold/65">
+              {lang === 'ar' ? 'لمعرفة الحقيقة؟' : ' to know?'}
+            </span>
           </h2>
           <p className="font-body text-xl text-ash/60 italic leading-relaxed mb-10">
-            Some truths cannot be unlearned. Some doors, once opened, cannot be closed.
+            {lang === 'ar'
+              ? 'بعض الحقائق لا يمكن محوها من الذاكرة.. وبعض الأبواب إذا فتحت لا تُغلق أبداً.'
+              : 'Some truths cannot be unlearned. Some doors, once opened, cannot be closed.'
+            }
           </p>
           <Link
             to="/stories"
@@ -390,8 +421,10 @@ export default function HomePage() {
             onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 40px rgba(107,15,26,0.28)'}
             onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
           >
-            <span>Begin Reading</span>
-            <span className="group-hover:translate-x-1 transition-transform duration-300 inline-block">→</span>
+            <span>{lang === 'ar' ? 'ابدأ القراءة الآن' : 'Begin Reading'}</span>
+            <span className="group-hover:translate-x-1 transition-transform duration-300 inline-block">
+              {lang === 'ar' ? '←' : '→'}
+            </span>
           </Link>
         </div>
       </section>

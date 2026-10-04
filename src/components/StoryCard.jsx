@@ -1,9 +1,15 @@
 import { Link } from 'react-router-dom';
 import { useRef } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function StoryCard({ story, size = 'default' }) {
   const isLarge = size === 'large';
   const cardRef = useRef(null);
+  const { lang, t } = useLanguage();
+
+  const title = lang === 'ar' && story.titleAr ? story.titleAr : story.title;
+  const excerpt = lang === 'ar' && story.excerptAr ? story.excerptAr : story.excerpt;
+  const categoryLabel = lang === 'ar' && story.categoryLabelAr ? story.categoryLabelAr : story.categoryLabel;
 
   const handleMouseMove = (e) => {
     const card = cardRef.current;
@@ -40,7 +46,7 @@ export default function StoryCard({ story, size = 'default' }) {
       <div className="absolute inset-0 overflow-hidden">
         <img
           src={story.image}
-          alt={story.title}
+          alt={title}
           className="card-image w-full h-full object-cover opacity-45 group-hover:opacity-55 transition-opacity duration-700"
           loading="lazy"
         />
@@ -80,7 +86,7 @@ export default function StoryCard({ story, size = 'default' }) {
         {/* Category + meta */}
         <div className="flex items-center gap-2 mb-3 opacity-80 group-hover:opacity-100 transition-opacity duration-300">
           <span className="category-pill px-2 py-0.5 bg-crimson/80 text-bone/80 group-hover:bg-crimson text-bone">
-            {story.categoryLabel}
+            {categoryLabel}
           </span>
           <span className="text-smoke text-xs font-sans">{story.readTime}</span>
         </div>
@@ -91,7 +97,7 @@ export default function StoryCard({ story, size = 'default' }) {
             isLarge ? 'text-2xl md:text-3xl' : 'text-xl'
           }`}
         >
-          {story.title}
+          {title}
         </h3>
 
         {/* Excerpt — slides in on hover */}
@@ -109,7 +115,7 @@ export default function StoryCard({ story, size = 'default' }) {
           }}
         >
           <p className="text-ash text-sm font-sans leading-relaxed line-clamp-2 pt-1 pb-2">
-            {story.excerpt}
+            {excerpt}
           </p>
         </div>
 
@@ -118,13 +124,13 @@ export default function StoryCard({ story, size = 'default' }) {
           <span
             className="text-gold text-xs font-sans tracking-[0.18em] uppercase opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-1 group-hover:translate-y-0"
           >
-            Read Story
+            {t('readStory')}
           </span>
           <span
             className="text-gold text-xs opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:translate-x-1"
             style={{ transition: 'opacity 0.5s ease, transform 0.4s ease' }}
           >
-            →
+            {lang === 'ar' ? '←' : '→'}
           </span>
         </div>
       </div>
